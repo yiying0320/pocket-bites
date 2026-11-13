@@ -11,6 +11,8 @@ const SAVED=[
 {name:'Phli : Cafe x Khao Soi',type:'咖啡店',emoji:'☕',rating:4.5,count:269,city:'清邁',lat:18.852309,lng:99.0436431}];
 const MODES={walk:{name:'步行',emoji:'🚶',maps:'walking',kmPerMin:.075,extra:0},scooter:{name:'騎機車',emoji:'🛵',maps:'two-wheeler',kmPerMin:.4,extra:2},car:{name:'開車',emoji:'🚗',maps:'driving',kmPerMin:.33,extra:4}};
 const RANGES=[10,15,20,30];
+const GKEY=window.POCKET_BITES_MAPS_KEY||'';
+let placesLib=null,searchSeq=0,lastResults=null;
 let mode='walk',category='餐廳',categoryLabel='餐廳',position=null,toastTimer;
 
 function toast(s){$('toast').textContent=s;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),3000)}
@@ -24,9 +26,9 @@ function placeUrl(s){const u=new URL('https://www.google.com/maps/search/');u.se
 function dirUrl(s){const u=new URL('https://www.google.com/maps/dir/');u.searchParams.set('api','1');u.searchParams.set('destination',s.lat+','+s.lng);u.searchParams.set('travelmode',MODES[mode].maps);return u.href}
 function starsHtml(s){return '<a class="rating" href="'+placeUrl(s)+'" target="_blank" rel="noopener" aria-label="Google 評分 '+s.rating.toFixed(1)+' 顆星，'+s.count+' 則評論"><span class="stars" style="--r:'+s.rating+'" aria-hidden="true">★★★★★</span><b>'+s.rating.toFixed(1)+'</b><span>('+s.count.toLocaleString()+')</span></a>'}
 
-function render(){const M=MODES[mode],minutes=+$('minutes').value;
+function render(){const M=MODES[mode],minutes=+$('minutes').value;renderNearby();
 $('timeLabel').textContent=M.emoji+' '+M.name+'時間';
-$('goWhat').textContent=$('query').value.trim()?'「'+$('query').value.trim()+'」':categoryLabel;
+if(!GKEY){$('goArrow').textContent='↗';$('goNote').textContent='會在 Google Maps 看到真實店家的照片、星數、評論與營業時間。'}$('goWhat').textContent=$('query').value.trim()?'「'+$('query').value.trim()+'」':categoryLabel;
 const box=$('savedNear');
 let html='<div class="step-label"><b>03</b> 附近的口袋收藏 <span class="saved-chip">'+M.name+' '+minutes+' 分內</span></div>';
 if(!position){box.innerHTML=html+'<p class="saved-hint">📍 先按上方「用我的位置找吃的」，小象只挑你附近、到得了的收藏店給你 ♡</p>';return}
@@ -41,9 +43,33 @@ function setMode(m){mode=m;document.querySelectorAll('[data-mode]').forEach(x=>{
 document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{setMode(b.dataset.mode);toast(MODES[mode].emoji+' 改用'+MODES[mode].name+'計算時間')}));
 document.querySelectorAll('[data-cat]').forEach(b=>b.addEventListener('click',()=>{category=b.dataset.cat;categoryLabel=b.textContent.replace(/\p{Extended_Pictographic}/gu,'').trim()==='都想看看'?'餐廳':b.dataset.cat.split(' ')[0];$('query').value='';document.querySelectorAll('[data-cat]').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',x===b)});render()}));
 $('minutes').addEventListener('change',render);$('query').addEventListener('input',render);
-function openMaps(){window.open(mapsSearchUrl(searchTerm()),'_blank','noopener');if(!position)toast('小提醒：先定位，地圖會更準喔')}
+function openMaps(){if(GKEY){findNearby();return}window.open(mapsSearchUrl(searchTerm()),'_blank','noopener');if(!position)toast('小提醒：先定位，地圖會更準喔')}
+// ---- Google Places (on-page results) ----
+function loadPlaces(){if(placesLib)return Promise.resolve(placesLib);return new Promise((res,rej)=>{window.__pbMapsReady=()=>google.maps.importLibrary('places').then(l=>{placesLib=l;res(l)},rej);const s=document.createElement('script');s.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(GKEY)+'&v=weekly&language=zh-TW&region=TW&loading=async&callback=__pbMapsReady';s.async=true;s.onerror=()=>rej(new Error('load'));window.gm_authFailure=()=>rej(new Error('auth'));document.head.appendChild(s)})}
+function navUrl(p){const u=new URL('https://www.google.com/maps/dir/');u.searchParams.set('api','1');u.searchParams.set('destination',p.name);u.searchParams.set('destination_place_id',p.id);u.searchParams.set('travelmode',MODES[mode].maps);return u.href}
+// Open-now from regular opening hours, evaluated in the place's own timezone.
+function openInfo(p){const h=p.regularOpeningHours;if(!h||!h.periods||!h.periods.length)return {open:null,today:''};
+const off=p.utcOffsetMinutes!=null?p.utcOffsetMinutes:480,t=new Date(Date.now()+off*60000),day=t.getUTCDay(),now=day*1440+t.getUTCHours()*60+t.getUTCMinutes(),W=7*1440;
+let open=false;for(const pr of h.periods){if(!pr.close){open=true;break}const a=pr.open.day*1440+pr.open.hour*60+pr.open.minute;let b=pr.close.day*1440+pr.close.hour*60+pr.close.minute;if(b<=a)b+=W;if((now>=a&&now<b)||(now+W>=a&&now+W<b)){open=true;break}}
+const d=h.weekdayDescriptions||[];const today=(d[(day+6)%7]||'').replace(/^[^:：]+[:：]\s*/,'');return {open,today}}
+const PRICE={INEXPENSIVE:'$',MODERATE:'$$',EXPENSIVE:'$$$',VERY_EXPENSIVE:'$$$$'};
+async function findNearby(){const box=$('results');if(!position){toast('先按上方「用我的位置找吃的」喔');$('locate').scrollIntoView({behavior:'smooth',block:'center'});return}
+const seq=++searchSeq,M=MODES[mode],minutes=+$('minutes').value,q=searchTerm();box.hidden=false;
+box.innerHTML='<div class="step-label"><b>03</b> 附近的店家</div><div class="nearby-loading"><img src="elephant.svg?v=5" alt=""> 小象正在找附近的'+esc(q)+'…</div>';box.scrollIntoView({behavior:motionEnabled()?'smooth':'instant',block:'start'});
+try{const {Place}=await loadPlaces();const radius=Math.min(50000,Math.max(500,((minutes-M.extra)*M.kmPerMin/1.3)*1000));
+const {places}=await Place.searchByText({textQuery:q,fields:['id','displayName','location','rating','userRatingCount','photos','regularOpeningHours','utcOffsetMinutes','businessStatus','priceLevel','primaryTypeDisplayName','googleMapsURI','websiteURI'],locationBias:{center:{lat:position.latitude,lng:position.longitude},radius},maxResultCount:12,language:'zh-TW',region:'tw'});
+if(seq!==searchSeq)return;
+const list=await Promise.all((places||[]).filter(p=>p.businessStatus!=='CLOSED_PERMANENTLY'&&p.location).map(async p=>{const {open,today}=openInfo(p);const ph=p.photos&&p.photos[0];const r={id:p.id,name:p.displayName,lat:p.location.lat(),lng:p.location.lng(),rating:p.rating,count:p.userRatingCount||0,type:p.primaryTypeDisplayName||'',price:PRICE[p.priceLevel]||'',open,today,url:p.googleMapsURI,web:p.websiteURI,photo:ph?ph.getURI({maxWidth:480,maxHeight:300}):'',credit:ph&&ph.authorAttributions&&ph.authorAttributions[0]};r.min=minutesTo(r);return r}));
+lastResults={q,list};renderNearby()}catch(e){if(seq!==searchSeq)return;box.innerHTML='<div class="step-label"><b>03</b> 附近的店家</div><div class="saved-empty"><span>🙈</span><h3>暫時連不上 Google 店家資料</h3><p>'+(e.message==='auth'?'API 金鑰無效或尚未開通 Places API。':'請確認網路後再試一次。')+'</p><a class="saved-more" href="'+mapsSearchUrl(q)+'" target="_blank" rel="noopener">改到 Google Maps 找 ↗</a></div>'}}
+function renderNearby(){if(!lastResults)return;const box=$('results'),M=MODES[mode],minutes=+$('minutes').value,{q}=lastResults;
+const list=lastResults.list.map(r=>({...r,min:minutesTo(r)})).filter(r=>r.min<=minutes).sort((a,b)=>a.min-b.min);
+let html='<div class="step-label"><b>03</b> 附近的「'+esc(q)+'」 <span class="saved-chip">'+M.name+' '+minutes+' 分內 · '+list.length+' 家</span></div>';
+if(!list.length){const next=RANGES.find(n=>n>minutes),nextMode=mode==='walk'?'scooter':mode==='scooter'?'car':null,lost=minutes>20;let btn='';if(!lost&&next)btn='<button class="saved-more" data-range="'+next+'">放寬到 '+next+' 分鐘 →</button>';else if(nextMode)btn='<button class="saved-more" data-mode-switch="'+nextMode+'">改'+MODES[nextMode].name+'找找看 '+MODES[nextMode].emoji+'</button>';
+html+='<div class="saved-empty"><span>'+(lost?'🐘':'🥺')+'</span><h3>'+(lost?'嗚嗚，找不到了…':'這個範圍內還沒找到')+'</h3><p>'+M.name+' '+minutes+' 分鐘內沒有符合的店。</p>'+btn+'</div>'}
+else html+=list.map(r=>'<article class="card place"><div class="art'+(r.photo?' has-photo':'')+'" style="--artbg:#fde3ee">'+(r.photo?'<img src="'+esc(r.photo)+'" alt="'+esc(r.name)+' 的照片" loading="lazy">':'<span class="food" aria-hidden="true">🍽️</span>')+'<span class="distance">'+M.emoji+' 約 '+r.min+' 分鐘</span>'+(r.credit?'<a class="caption" href="'+esc(r.credit.uri||'#')+'" target="_blank" rel="noopener">📷 '+esc(r.credit.displayName||'')+'</a>':'')+'</div><div class="card-body"><div class="card-title"><h3>'+esc(r.name)+'</h3>'+(r.open===true?'<span class="status">● 營業中</span>':r.open===false?'<span class="status closed">休息中</span>':'')+'</div>'+(r.rating?'<a class="rating" href="'+esc(r.url)+'" target="_blank" rel="noopener"><span class="stars" style="--r:'+r.rating+'" aria-hidden="true">★★★★★</span><b>'+r.rating.toFixed(1)+'</b><span>('+r.count.toLocaleString()+' 則評論)</span></a>':'<p class="tags">尚無評分</p>')+'<p class="tags">'+esc([r.type,r.price].filter(Boolean).join(' · '))+(r.today?'<br>🕒 今天 '+esc(r.today):'')+'</p><div class="actions"><a href="'+esc(r.url)+'" target="_blank" rel="noopener">📋 菜單・評論</a><a class="go" href="'+navUrl(r)+'" target="_blank" rel="noopener">🧭 直接導航</a></div></div></article>').join('');
+html+='<p class="saved-note">資料來自 Google；時間以直線距離粗估。<a href="'+mapsSearchUrl(q)+'" target="_blank" rel="noopener">在 Google Maps 看更多 ↗</a></p>';box.innerHTML=html}
 $('searchForm').addEventListener('submit',e=>{e.preventDefault();openMaps()});$('goMaps').onclick=openMaps;
-$('savedNear').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.range){$('minutes').value=b.dataset.range;render();toast('放寬到 '+b.dataset.range+' 分鐘')}else if(b.dataset.modeSwitch){setMode(b.dataset.modeSwitch);toast('改用'+MODES[mode].name+'，再找找看 '+MODES[mode].emoji)}});
+['savedNear','results'].forEach(id=>$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.range){$('minutes').value=b.dataset.range;render();toast('放寬到 '+b.dataset.range+' 分鐘')}else if(b.dataset.modeSwitch){setMode(b.dataset.modeSwitch);toast('改用'+MODES[mode].name+'，再找找看 '+MODES[mode].emoji)}}));
 function goSaved(){$('savedNear').scrollIntoView({behavior:motionEnabled()?'smooth':'instant',block:'start'});$('explore').classList.remove('selected');$('bottomSaved').classList.add('selected')}
 $('saved').onclick=goSaved;$('bottomSaved').onclick=goSaved;$('explore').onclick=()=>{window.scrollTo({top:0,behavior:motionEnabled()?'smooth':'instant'});$('explore').classList.add('selected');$('bottomSaved').classList.remove('selected')};
 function sheet(html){$('sheetContent').innerHTML=html;$('sheet').showModal()}
