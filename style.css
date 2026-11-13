@@ -30,3 +30,12 @@
 .saved-row strong{display:block;font-size:12px;color:#603c4d;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .saved-row small{display:block;font-size:10px;color:#a2708a;margin-top:2px}
 .saved-row a{flex-shrink:0;text-decoration:none;background:#b94c7b;color:#fff;border-radius:11px;padding:8px 11px;font-size:11px;font-weight:700}
+.rating{display:inline-flex;align-items:center;gap:4px;margin-top:3px;text-decoration:none;font-size:10px;color:#a2708a}
+.rating b{color:#7b3f5c;font-size:11px}
+.stars{font-size:12px;letter-spacing:1px;background:linear-gradient(90deg,#f0a63c calc(var(--r)/5*100%),#ead7e1 0);-webkit-background-clip:text;background-clip:text;color:transparent}
+.saved-actions{display:flex;flex-direction:column;gap:5px;flex-shrink:0}
+.saved-actions a{text-align:center}
+.saved-row a.saved-page{background:#fff;color:#b94c7b;border:1.5px solid #e4a9c3}
+.saved-row>.saved-actions{flex:0 0 auto;min-width:0}
+.saved-actions a{padding:7px 11px}
+.saved-row a.rating{background:none;padding:0;border-radius:0;color:#a2708a;font-weight:400;font-size:10px}

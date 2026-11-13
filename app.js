@@ -12,15 +12,15 @@ const data=[
 {id:'bigburger',name:'週末大漢堡',category:'漢堡',emoji:'🍔',color:'#f6dcb4',minutes:75,open:true,close:'23:00',tags:'雙層牛肉 · 公路漢堡',items:[['雙層起司堡',220],['洋蔥圈',70]],meal:'雙層起司堡',price:220,dineExtra:0,min:'示範：每人一份主餐',parking:'示範：有停車場',keywords:'漢堡 牛肉 起司 鹹的'}];
 // Real places from the shared Google Maps list「想去的地點」(food only; closed/missing places left out).
 const SAVED=[
-{name:'金貴 中式料理',type:'台灣餐廳',emoji:'🥢',rating:4.6,lat:22.6614076,lng:120.314173},
-{name:'酌咖啡烘豆坊',type:'咖啡店',emoji:'☕',rating:4.9,lat:22.6879771,lng:120.320118},
-{name:'叟卡宋 SOKA SONG',type:'咖啡店',emoji:'☕',rating:5.0,lat:22.9926993,lng:120.2001188},
-{name:'晝夜甜時 zhòuyè',type:'甜品店',emoji:'🍰',rating:4.7,lat:22.650909,lng:120.3050819},
-{name:'大骨麵 DaGoodMan',type:'麵店',emoji:'🍜',rating:4.3,lat:22.6302326,lng:120.2929891},
-{name:'TO DAY 致日子咖啡 黃埔店',type:'咖啡店',emoji:'☕',rating:4.1,lat:22.6183229,lng:120.3640146},
-{name:'小園日本料理',type:'日式料理',emoji:'🍣',rating:4.1,lat:22.6277042,lng:120.2957276},
-{name:'Phli : Cafe x Khao Soi',type:'咖啡店',emoji:'☕',rating:4.5,lat:18.852309,lng:99.0436431},
-{name:'TOM N TOMS COFFEE',type:'咖啡店',emoji:'☕',rating:4.4,lat:null,lng:null}];
+{name:'金貴 中式料理',count:2848,city:'高雄',type:'台灣餐廳',emoji:'🥢',rating:4.6,lat:22.6614076,lng:120.314173},
+{name:'酌咖啡烘豆坊',count:74,city:'高雄',type:'咖啡店',emoji:'☕',rating:4.9,lat:22.6879771,lng:120.320118},
+{name:'叟卡宋 SOKA SONG',count:82,city:'台南',type:'咖啡店',emoji:'☕',rating:5.0,lat:22.9926993,lng:120.2001188},
+{name:'晝夜甜時 zhòuyè',count:70,city:'高雄',type:'甜品店',emoji:'🍰',rating:4.7,lat:22.650909,lng:120.3050819},
+{name:'大骨麵 DaGoodMan',count:1514,city:'高雄',type:'麵店',emoji:'🍜',rating:4.3,lat:22.6302326,lng:120.2929891},
+{name:'TO DAY 致日子咖啡 黃埔店',count:159,city:'高雄',type:'咖啡店',emoji:'☕',rating:4.1,lat:22.6183229,lng:120.3640146},
+{name:'小園日本料理',count:1712,city:'高雄',type:'日式料理',emoji:'🍣',rating:4.1,lat:22.6277042,lng:120.2957276},
+{name:'Phli : Cafe x Khao Soi',count:269,city:'清邁',type:'咖啡店',emoji:'☕',rating:4.5,lat:18.852309,lng:99.0436431},
+{name:'TOM N TOMS COFFEE',count:50,city:'',type:'咖啡店',emoji:'☕',rating:4.4,lat:null,lng:null}];
 const MODES={walk:{name:'步行',emoji:'🚶',maps:'walking'},scooter:{name:'騎機車',emoji:'🛵',maps:'two-wheeler'},car:{name:'開車',emoji:'🚗',maps:'driving'}};
 let mode='walk';
 // Demo shops store walking minutes; scooter/car add a little time for parking.
@@ -30,14 +30,16 @@ function metersTo(s){const R=6371000,r=x=>x*Math.PI/180,dLat=r(s.lat-position.la
 function minsFromMeters(m){return Math.max(1,Math.round(mode==='walk'?m/75:mode==='scooter'?m/400+2:m/330+4))}
 function fmtMin(m){return m<90?'約 '+m+' 分鐘':m<600?'約 '+(m/60).toFixed(1)+' 小時':'很遠很遠 ✈'}
 function dirUrl(s){const u=new URL('https://www.google.com/maps/dir/');u.searchParams.set('api','1');u.searchParams.set('destination',s.lat+','+s.lng);u.searchParams.set('travelmode',MODES[mode].maps);return u.href}
+function placeUrl(s){const u=new URL('https://www.google.com/maps/search/');u.searchParams.set('api','1');u.searchParams.set('query',(s.name+' '+s.city).trim());return u.href}
+function starsHtml(s){return '<a class="rating" href="'+placeUrl(s)+'" target="_blank" rel="noopener" aria-label="Google 評分 '+s.rating.toFixed(1)+' 顆星，'+s.count+' 則評論，開啟店家頁"><span class="stars" style="--r:'+s.rating+'" aria-hidden="true">★★★★★</span><b>'+s.rating.toFixed(1)+'</b><span>('+s.count.toLocaleString()+')</span></a>'}
 function renderSaved(){const box=$('savedNear'),minutes=+$('minutes').value,M=MODES[mode];
-if(!position){box.innerHTML='<div class="saved-head"><b>📌 我的 Google 收藏</b><span>'+SAVED.length+' 家想去的店</span></div><p class="saved-hint">點上方「用我的位置找吃的」，小象幫你看哪些收藏的店就在附近 ♡</p>';return}
+if(!position){box.innerHTML='<div class="saved-head"><b>📌 我的 Google 收藏</b><span>'+SAVED.length+' 家想去的店</span></div><p class="saved-hint">點上方「用我的位置找吃的」，小象幫你看哪些收藏的店就在附近 ♡</p>'+SAVED.map(s=>'<div class="saved-row"><span class="saved-emoji">'+s.emoji+'</span><div><strong>'+s.name+'</strong>'+starsHtml(s)+'<small>'+s.type+(s.city?' · '+s.city:'')+'</small></div><div class="saved-actions"><a class="saved-page" href="'+placeUrl(s)+'" target="_blank" rel="noopener">店家頁</a></div></div>').join('')+'<p class="saved-note">星數與評論數取自 Google Maps（2026/11/13），點星星看最新評論、照片與菜單。</p>';return}
 const list=SAVED.filter(s=>s.lat!=null).map(s=>({...s,min:minsFromMeters(metersTo(s))})).sort((a,b)=>a.min-b.min),near=list.filter(s=>s.min<=minutes);
-const row=s=>'<div class="saved-row"><span class="saved-emoji">'+s.emoji+'</span><div><strong>'+s.name+'</strong><small>'+s.type+' · ★'+s.rating.toFixed(1)+' · '+M.emoji+' '+fmtMin(s.min)+'</small></div><a href="'+dirUrl(s)+'" target="_blank" rel="noopener">導航 ↗</a></div>';
+const row=s=>'<div class="saved-row"><span class="saved-emoji">'+s.emoji+'</span><div><strong>'+s.name+'</strong>'+starsHtml(s)+'<small>'+s.type+' · '+M.emoji+' '+fmtMin(s.min)+'</small></div><div class="saved-actions"><a class="saved-page" href="'+placeUrl(s)+'" target="_blank" rel="noopener">店家頁</a><a href="'+dirUrl(s)+'" target="_blank" rel="noopener">導航 ↗</a></div></div>';
 let html;
 if(near.length)html='<div class="saved-head"><b>📌 你收藏的店就在附近！</b><span>'+M.name+' '+minutes+' 分內</span></div>'+near.map(row).join('');
 else{const n=list[0];html='<div class="saved-head"><b>📌 我的 Google 收藏</b><span>'+M.name+' '+minutes+' 分內</span></div><p class="saved-hint">'+(minutes>20?'🐘 嗚嗚，找不到了… '+M.name+' '+minutes+' 分鐘內沒有你收藏的店。':M.name+' '+minutes+' 分鐘內還沒有你收藏的店。')+(n?' 最近的是：':'')+'</p>'+(n?row(n):'')}
-box.innerHTML=html+'<p class="saved-note">時間以直線距離粗估，實際路程以 Google Maps 為準。</p>'}
+box.innerHTML=html+'<p class="saved-note">時間以直線距離粗估；星數取自 Google Maps（2026/11/13），點星星或「店家頁」看最新評論、照片與菜單。</p>'}
 let category='all',favoritesOnly=false,hidden=new Set(),position=null,toastTimer;
 let favorites;try{favorites=JSON.parse(localStorage.getItem('pocket-bites-favorites')||'[]');if(!Array.isArray(favorites))favorites=[]}catch{favorites=[]}
 function toast(s){$('toast').textContent=s;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),3000)}
