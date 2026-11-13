@@ -9,3 +9,7 @@ Features: mood/keyword filters, budget including dine-in minimum, walking range,
 Publish: GitHub Pages from main / root.
 
 Edit the root HTML/CSS/JS files. Icons are a custom bun/location-pin SVG and PNG exports.
+
+## Pink picnic revision
+
+Pink visual hierarchy, three numbered steps, all five categories visible on narrow phones, live filter chips and result count, recommendation jump button, motion toggle, reduced-motion support, mascot boop and transient tap particles. The hit target stays still while its illustration floats.
