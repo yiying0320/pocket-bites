@@ -89,3 +89,20 @@ html.locked .app{display:none}
 .gate-error{min-height:20px;margin:12px 0 0!important;color:#c0396f!important;font-weight:700}
 .shake{animation:gateShake .35s}
 @keyframes gateShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+/* v11: at-a-glance chips, popular dishes, review summary */
+.card.place .tags{margin:4px 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 9px}
+.chip{font-size:10px;color:#7b4d63;background:#fbeef4;border:1px solid #f0d3e1;border-radius:20px;padding:3px 8px;white-space:nowrap}
+.chip.price{background:#fff3d6;border-color:#f1d79c;color:#8a5a12;font-weight:700}
+.hot{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin:0 0 9px;font-size:10px;color:#a2708a}
+.hot>span{font-weight:700;color:#c0396f;margin-right:2px}
+.hot b{font-size:11px;font-weight:700;color:#fff;background:linear-gradient(135deg,#e46a98,#c64d7f);border-radius:8px;padding:3px 8px}
+.buzz{background:#fff8fb;border:1px dashed #ecc9da;border-radius:12px;padding:8px 10px;margin:0 0 12px;font-size:11px;color:#6f4358;line-height:1.7}
+.buzz summary{cursor:pointer;list-style:none;display:flex;gap:4px}
+.buzz summary::-webkit-details-marker{display:none}
+.buzz summary span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.buzz[open] summary span{display:none}
+.buzz[open] summary:after{content:'網友怎麼說';font-weight:700;color:#b94c7b}
+.buzz p{margin:4px 0 2px}
+.buzz small{display:block;font-size:9px;color:#b08aa0}
