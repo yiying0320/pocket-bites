@@ -74,7 +74,24 @@ function goSaved(){$('savedNear').scrollIntoView({behavior:motionEnabled()?'smoo
 $('saved').onclick=goSaved;$('bottomSaved').onclick=goSaved;$('explore').onclick=()=>{window.scrollTo({top:0,behavior:motionEnabled()?'smooth':'instant'});$('explore').classList.add('selected');$('bottomSaved').classList.remove('selected')};
 function sheet(html){$('sheetContent').innerHTML=html;$('sheet').showModal()}
 $('closeSheet').onclick=()=>$('sheet').close();$('sheet').addEventListener('click',e=>{if(e.target===$('sheet')){const r=$('sheet').getBoundingClientRect();if(e.clientY<r.top||e.clientX<r.left||e.clientX>r.right)$('sheet').close()}});
-function locate(silent){if(!navigator.geolocation){toast('這個瀏覽器不支援定位，請用手機瀏覽器開啟');return}$('locationTitle').textContent='正在找你的位置…';$('locate').disabled=true;navigator.geolocation.getCurrentPosition(p=>{position={latitude:p.coords.latitude,longitude:p.coords.longitude};$('locationTitle').textContent='定位成功 ♡';$('locationText').textContent='點一下可以重新定位';$('locate').disabled=false;render();if(!silent)toast('定位成功！看看附近有沒有你收藏的店')},e=>{$('locationTitle').textContent='定位未成功，點我重試';$('locationText').textContent=e.code===1?'請在瀏覽器設定允許定位，再試一次':'請確認 GPS 與網路後再試';$('locate').disabled=false;if(!silent)toast('沒拿到位置，不會猜測你的所在地')},{enableHighAccuracy:true,timeout:12000,maximumAge:60000})}
+const IN_APP=/Line\/|Instagram|FBAN|FBAV|MicroMessenger/i.test(navigator.userAgent);
+function setPosition(lat,lng,title,sub){position={latitude:lat,longitude:lng};$('locationTitle').textContent=title;$('locationText').textContent=sub;$('locate').disabled=false;render();if(lastResults)findNearby()}
+function locateFailed(e,silent){$('locate').disabled=false;$('locationTitle').textContent='定位未成功，點我重試';
+const msg=IN_APP?'你在 LINE／IG 裡開啟，請按右上角「⋯」改用 Safari 或 Chrome 開啟':e&&e.code===1?'瀏覽器沒有定位權限：請到瀏覽器或手機設定允許「位置」':e&&e.code===3?'等太久沒收到 GPS，可以到窗邊再試，或直接輸入地點':'暫時抓不到位置，請確認手機定位已開啟，或直接輸入地點';
+$('locationText').textContent=msg;$('placeForm').classList.add('nudge');if(!silent)toast('定位沒成功，也可以在下面直接輸入地點 ↓')}
+function locate(silent){if(!navigator.geolocation){locateFailed(null,silent);return}$('locationTitle').textContent='正在找你的位置…';$('locationText').textContent='第一次會請你允許定位';$('locate').disabled=true;
+const ok=p=>{setPosition(p.coords.latitude,p.coords.longitude,'定位成功 ♡','點一下可以重新定位');$('placeForm').classList.remove('nudge');if(!silent)toast('定位成功！')};
+navigator.geolocation.getCurrentPosition(ok,e=>{if(e.code===1){locateFailed(e,silent);return}
+// High-accuracy GPS failed or timed out: retry once with network-based location.
+$('locationText').textContent='GPS 較慢，改用網路定位再試一次…';navigator.geolocation.getCurrentPosition(ok,e2=>locateFailed(e2,silent),{enableHighAccuracy:false,timeout:15000,maximumAge:300000})},{enableHighAccuracy:true,timeout:10000,maximumAge:60000})}
+async function usePlace(text){text=text.trim();if(!text)return;if(!GKEY){toast('需要 Google 金鑰才能用地點搜尋');return}
+$('placeGo').disabled=true;$('placeGo').textContent='找…';
+try{const {Place}=await loadPlaces();const {places}=await Place.searchByText({textQuery:text,fields:['location','displayName','formattedAddress'],maxResultCount:1,language:'zh-TW',region:'tw'});
+if(!places||!places.length||!places[0].location){toast('找不到「'+text+'」，換個說法試試');return}
+const p=places[0];setPosition(p.location.lat(),p.location.lng(),'📍 '+(p.displayName||text),'以這個地點為中心找吃的・點上面可改回 GPS 定位');$('placeForm').classList.remove('nudge');toast('改從「'+(p.displayName||text)+'」出發')}
+catch(e){toast(e.message==='auth'?'Google 金鑰無法使用':'地點搜尋失敗，請稍後再試')}
+finally{$('placeGo').disabled=false;$('placeGo').textContent='用這裡'}}
+$('placeForm').addEventListener('submit',e=>{e.preventDefault();usePlace($('placeInput').value)});
 $('locate').onclick=()=>locate(false);
 // If location was already allowed before, locate automatically.
 try{navigator.permissions&&navigator.permissions.query({name:'geolocation'}).then(r=>{if(r.state==='granted')locate(true)}).catch(()=>{})}catch{}

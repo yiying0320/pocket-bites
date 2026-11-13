@@ -66,3 +66,12 @@
 .saved-note a{color:#b94c7b;font-weight:700}
 a.saved-more{display:inline-block;text-decoration:none}
 .art.has-photo{height:160px}
+
+/* v8: manual place entry */
+.place-form{display:flex;align-items:center;gap:6px;margin:-8px 0 16px;padding:6px 6px 6px 12px;border:1px dashed #e4bcd0;border-radius:13px;background:#fffafd;transition:box-shadow .2s,border-color .2s}
+.place-form>span{font-size:10px;color:#a2708a;white-space:nowrap}
+.place-form input{flex:1;min-width:0;border:0;outline:none;background:none;font-size:11px;color:#603c4d;min-height:34px}
+.place-form input::placeholder{color:#b494a4}
+.place-form button{border:0;border-radius:9px;background:#f6d4e2;color:#9d4066;font-size:11px;font-weight:700;padding:8px 11px;white-space:nowrap}
+.place-form.nudge{border-style:solid;border-color:#cd759a;box-shadow:0 0 0 3px #f6d4e2}
+.place-form.nudge button{background:#be4e7c;color:#fff}
