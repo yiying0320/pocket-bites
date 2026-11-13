@@ -6,3 +6,27 @@
 .hero{overflow:hidden}.mascot .plate{max-width:100%}@media(max-width:350px){.mascot .bun{width:90px;left:7px}.mascot .bun i:nth-child(2){left:63px}.mascot .bun em{box-shadow:55px 0 #ef9eb4}.mascot .sticker{left:9px}}
 /* Keep the hit target still; animate only the illustration inside it. */
 .mascot{animation:none}.mascot .bun{animation:floatBun 4.8s ease-in-out infinite}.quiet-motion .mascot .bun{animation:none}@media(prefers-reduced-motion:reduce){.mascot .bun{animation:none}}
+
+/* v3: elephant mascot, travel mode, saved places */
+.mascot .ellie{position:absolute;left:4px;top:6px;width:112px;height:112px;z-index:1;animation:floatBun 4.8s ease-in-out infinite;filter:drop-shadow(0 4px 0 rgba(117,64,82,.12))}
+.quiet-motion .mascot .ellie{animation:none}@media(prefers-reduced-motion:reduce){.mascot .ellie{animation:none}}
+.logo{object-fit:contain}
+.mode-row{display:flex;align-items:center;gap:6px;margin:0 0 14px;flex-wrap:wrap}
+.mode-title{font-size:10px;color:#93637a;margin-right:2px}
+.mode-row button{display:inline-flex;align-items:center;gap:4px;border:1px solid #efd6e3;background:#fff9fc;border-radius:999px;padding:7px 12px;font-size:11px;min-height:38px;color:#603c4d;transition:transform .18s,background .18s}
+.mode-row button span{font-size:16px;line-height:1}
+.mode-row button.active{background:#fce0ed;border:1.5px solid #cd759a;box-shadow:0 2px 0 #e8b2ca;color:#a13764;font-weight:700}
+.mode-row button:active{transform:scale(.96)}
+.saved-near{margin-top:18px;padding:14px;border:1.5px solid #e9c3d5;border-radius:18px;background:linear-gradient(180deg,#fff7fb,#fffdfe)}
+.saved-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.saved-head b{font-size:13px;color:#7b3f5c}
+.saved-head span{font-size:9px;color:#a2708a;border:1px solid #ecc9da;border-radius:20px;padding:3px 8px;white-space:nowrap}
+.saved-hint{font-size:11px;color:#966b82;margin:6px 0}
+.saved-note{font-size:9px;color:#b28aa0;margin:8px 0 0}
+.saved-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px dashed #f0d3e1}
+.saved-row:first-of-type{border-top:0}
+.saved-emoji{flex-shrink:0;width:36px;height:36px;display:grid;place-items:center;background:#fde7f0;border-radius:12px;font-size:19px}
+.saved-row>div{flex:1;min-width:0}
+.saved-row strong{display:block;font-size:12px;color:#603c4d;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.saved-row small{display:block;font-size:10px;color:#a2708a;margin-top:2px}
+.saved-row a{flex-shrink:0;text-decoration:none;background:#b94c7b;color:#fff;border-radius:11px;padding:8px 11px;font-size:11px;font-weight:700}

@@ -1,1 +1,34 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="48" fill="#fff0f5"/><path d="M97 24c-33 0-60 24-60 55 0 42 60 91 60 91s60-49 60-91c0-31-27-55-60-55Z" fill="#f29bbb" stroke="#754052" stroke-width="6" stroke-linejoin="round"/><path d="M48 88c0-32 21-48 49-48s49 16 49 48c0 25-16 33-49 33S48 113 48 88Z" fill="#ffe1b2" stroke="#754052" stroke-width="5"/><path d="m79 53-8 12m27-15-7 12m25-8-6 11" stroke="#d5a15e" stroke-width="5" stroke-linecap="round"/><ellipse cx="76" cy="86" rx="4" ry="5" fill="#754052"/><ellipse cx="119" cy="86" rx="4" ry="5" fill="#754052"/><path d="M89 93q8 12 17 0" stroke="#754052" stroke-width="4" stroke-linecap="round" fill="none"/><ellipse cx="62" cy="97" rx="8" ry="5" fill="#f3a491"/><ellipse cx="133" cy="97" rx="8" ry="5" fill="#f3a491"/><path d="M150 25v24m-12-12h24" stroke="#bd6689" stroke-width="6" stroke-linecap="round"/><path d="m35 135 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z" fill="#e9b65d"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 192 192"><rect width="192" height="192" rx="48" fill="#fff0f5"/><g transform="translate(9.6 12) scale(.9)">
+  <!-- ears -->
+  <ellipse cx="46" cy="94" rx="34" ry="38" fill="#d9d2f0" stroke="#754052" stroke-width="5"/>
+  <ellipse cx="50" cy="96" rx="19" ry="24" fill="#f7b9cf"/>
+  <ellipse cx="146" cy="94" rx="34" ry="38" fill="#d9d2f0" stroke="#754052" stroke-width="5"/>
+  <ellipse cx="142" cy="96" rx="19" ry="24" fill="#f7b9cf"/>
+  <!-- head -->
+  <ellipse cx="96" cy="100" rx="50" ry="47" fill="#e6e1f7" stroke="#754052" stroke-width="5"/>
+  <!-- little bow -->
+  <path d="M96 56 l-17 -10 q-5 9 0 18 Z M96 56 l17 -10 q5 9 0 18 Z" fill="#f08db2" stroke="#754052" stroke-width="4" stroke-linejoin="round"/>
+  <circle cx="96" cy="56" r="5.5" fill="#f08db2" stroke="#754052" stroke-width="4"/>
+  <!-- eyes -->
+  <ellipse cx="76" cy="94" rx="6" ry="7.5" fill="#754052"/>
+  <ellipse cx="116" cy="94" rx="6" ry="7.5" fill="#754052"/>
+  <circle cx="78" cy="91" r="2.2" fill="#fff"/>
+  <circle cx="118" cy="91" r="2.2" fill="#fff"/>
+  <!-- cheeks -->
+  <ellipse cx="63" cy="113" rx="9" ry="5.5" fill="#f5a3bf"/>
+  <ellipse cx="129" cy="113" rx="9" ry="5.5" fill="#f5a3bf"/>
+  <!-- smile -->
+  <path d="M74 124 q7 7 13 1" stroke="#754052" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <!-- chopsticks (behind trunk tip) -->
+  <path d="M120 150 L168 74" stroke="#754052" stroke-width="9" stroke-linecap="round"/>
+  <path d="M120 150 L168 74" stroke="#e7a65a" stroke-width="4.5" stroke-linecap="round"/>
+  <path d="M131 154 L176 82" stroke="#754052" stroke-width="9" stroke-linecap="round"/>
+  <path d="M131 154 L176 82" stroke="#e7a65a" stroke-width="4.5" stroke-linecap="round"/>
+  <!-- dumpling at chopstick tips -->
+  <path d="M157 74 q15 -24 30 0 q-15 7 -30 0 Z" fill="#fff6e6" stroke="#754052" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M166 66 l2 5 M172 62 v6 M178 66 l-2 5" stroke="#d9b48a" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- trunk: outline + fill, curling to grip chopsticks -->
+  <path d="M96 108 C94 136 104 154 122 154 C132 154 138 146 136 138" stroke="#754052" stroke-width="23" fill="none" stroke-linecap="round"/>
+  <path d="M96 108 C94 136 104 154 122 154 C132 154 138 146 136 138" stroke="#e6e1f7" stroke-width="13" fill="none" stroke-linecap="round"/>
+  <path d="M101 124 h-9 M102 136 h-8" stroke="#bfb5e0" stroke-width="2.5" stroke-linecap="round"/>
+</g></svg>
