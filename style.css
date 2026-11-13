@@ -75,3 +75,17 @@ a.saved-more{display:inline-block;text-decoration:none}
 .place-form button{border:0;border-radius:9px;background:#f6d4e2;color:#9d4066;font-size:11px;font-weight:700;padding:8px 11px;white-space:nowrap}
 .place-form.nudge{border-style:solid;border-color:#cd759a;box-shadow:0 0 0 3px #f6d4e2}
 .place-form.nudge button{background:#be4e7c;color:#fff}
+/* v9: password gate */
+html.locked .app{display:none}
+#gate{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 80% 10%,#ffe1ed 0,transparent 320px),#fff5f8}
+.gate-card{width:min(100%,340px);text-align:center;background:#fff;border:1.5px solid #efd3df;border-radius:26px;padding:28px 22px 22px;box-shadow:0 6px 0 #f5e2eb}
+.gate-card img{width:110px;height:110px;animation:floatBun 4.8s ease-in-out infinite}
+.gate-card h1{font-size:22px;margin:6px 0 4px;color:#613c4e}
+.gate-card p{font-size:12px;color:#9e7286;line-height:1.8;margin:0 0 16px}
+.gate-card input[type=password]{width:100%;border:1.5px solid #eab4ce;border-radius:13px;padding:12px 14px;font-size:15px;background:#fffafd;color:#603c4d;outline:none}
+.gate-card input[type=password]:focus{box-shadow:0 0 0 3px #f2c9dc}
+.gate-remember{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;color:#a2708a;margin:12px 0}
+.gate-card button{width:100%;min-height:46px;border:0;border-radius:13px;background:#bf4f7c;color:#fff;font-weight:700;font-size:13px;box-shadow:0 4px 0 #9b3d64}
+.gate-error{min-height:20px;margin:12px 0 0!important;color:#c0396f!important;font-weight:700}
+.shake{animation:gateShake .35s}
+@keyframes gateShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
