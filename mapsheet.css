@@ -1,4 +1,4 @@
-/* TEST VERSION: embedded map sheet */
+/* In-page map sheet */
 #mapSheet{position:fixed;inset:0;z-index:60;pointer-events:none}
 #mapSheet .ms-back{position:absolute;inset:0;background:#67384d55;opacity:0;transition:opacity .25s}
 #mapSheet .ms-panel{position:absolute;left:50%;bottom:0;width:min(100%,540px);height:88dvh;transform:translate(-50%,105%);transition:transform .35s cubic-bezier(.2,.9,.3,1.05);background:#fff7fb;border-radius:26px 26px 0 0;border:1px solid #ecc5d8;border-bottom:0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -10px 40px #a1577a33}
@@ -23,4 +23,3 @@
 .ms-pin.focus span{color:#fff}
 .ms-pin.me{background:#fff3d6;border-color:#f1d79c}
 .ms-all{margin-left:8px;border:1.5px solid #cd759a;background:#fce0ed;color:#a13764;border-radius:20px;font-size:11px;font-weight:700;padding:5px 10px}
-.test-ribbon{position:fixed;top:10px;right:-34px;transform:rotate(35deg);background:#e9b65d;color:#5b2f44;font-size:10px;font-weight:800;padding:4px 40px;z-index:70;box-shadow:0 2px 6px #0002;pointer-events:none}

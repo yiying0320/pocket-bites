@@ -1,5 +1,5 @@
-// TEST VERSION: show Google Maps inside the page instead of jumping to the Maps app.
-// Loaded only by test.html, after app.js (uses its globals: position, mode, MODES, lastResults, SAVED, loadPlaces, ...).
+// In-page Google map sheet: shop buttons open an embedded map instead of jumping to the Maps app.
+// Loaded after app.js (uses its globals: position, mode, MODES, lastResults, SAVED, loadPlaces, ...).
 (function () {
   const $e = id => document.getElementById(id);
   let mapsReady = null, map = null, markers = [], line = null;
@@ -112,6 +112,4 @@
   });
   obs.observe($e('results'), { childList: true, subtree: true });
 
-  // test badge
-  const tag = document.createElement('div'); tag.className = 'test-ribbon'; tag.textContent = '測試版・內嵌地圖'; document.body.appendChild(tag);
 })();
